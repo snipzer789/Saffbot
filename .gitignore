@@ -1,0 +1,6 @@
+/node_modules
+/main/.env
+things.txt
+/main/youtubeApiInfo.json
+main/test.json
+.gitignore
