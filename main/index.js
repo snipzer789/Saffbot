@@ -16,6 +16,8 @@ const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
 
 // variable init 
 const YoutubeUrlApicall = 'https://www.googleapis.com/youtube/v3'
+const TimeCheck = ['00','05','10','15','20','25','30','35','40','45','50','55']
+
 // test id UCXuqSBlHAE6Xw-yeJA0Tunw
 // saff id UC4c7omgQTXLLZWfG1glBamg
 
@@ -40,17 +42,20 @@ async function LoadYoutubeApiDB(price) {
       const YoutubeApiInfo = Database.collection("YoutubeApiInfo")
         
       const cursor = await YoutubeApiInfo.findOne({ UsageCount: { $lt: 10000} });
+      
+      temp.push(cursor.UsageCount)
+      temp = temp.map(Number)
+      let newUsage = temp[0]+price
+      console.log(newUsage)
 
-      temp = cursor.UsageCount
-      temp = temp.map(Number);
-      console.log(temp);
-      let newUsage = temp+price
-
-      await YoutubeApiInfo.updateOne({YoutubeApiKey:`${cursor.YoutubeApiKey}`}, { $set: { UsageCount: `${newUsage}` }})
+      await YoutubeApiInfo.updateOne({YoutubeApiKey:`${cursor.YoutubeApiKey}`}, { $set: { UsageCount: newUsage }})
       // Print a message if no documents were found
   
       // Print returned documents
       array.push(cursor.YoutubeApiKey, cursor.ApiName, cursor.UsageCount)
+
+
+
       return array
     } finally {
       // Ensures that the client will close when you finish/error
@@ -97,7 +102,7 @@ async function LoadDiscordDB() {
         // Print returned documents
         for await (const doc of cursor) {
           array.push(doc.DiscordChannelId, doc.YoutubeId, doc.LastStreamUrl)
-        }
+      }
         return array
       } finally {
         // Ensures that the client will close when you finish/error
