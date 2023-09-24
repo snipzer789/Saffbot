@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "date-and-time": "^3.0.2",
+    "mongodb": "^6.1.0",
     "nodemon": "^3.0.1"
   }
 }
