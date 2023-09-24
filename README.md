@@ -30,10 +30,9 @@ Re-implement original bot functionality
 If you wish to contribute, dont. this is mainly a project for me to learn just
 
 ## Authors and acknowledgment
-
+me(snipzer)
 
 ## License
-For open source projects, say how it is licensed.
 
 ## Project status
 currently worked on
