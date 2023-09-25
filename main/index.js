@@ -12,8 +12,6 @@ const http = require('node:http')
 const { Client, GatewayIntentBits, Message, Events } = require('discord.js')
 const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
 const { check } = require('./timecheck.js')
-const { channel } = require('node:diagnostics_channel')
-
 
 // variable init 
 const YoutubeUrlApicall = 'https://www.googleapis.com/youtube/v3'
@@ -31,7 +29,7 @@ async function LoadYoutubeApiDB(price) {
       
       let array = []
       let temp = []
-      // Connect the client to the server
+      // Connect the client to the server`
       await MongoDb_Client.connect();
       // Send a ping to confirm a successful connection
       await MongoDb_Client.db("admin").command({ ping: 1 });
@@ -63,7 +61,7 @@ async function LoadYoutubeApiDB(price) {
     }
 }
 
-async function LoadDiscordDB(channelId) {
+async function LoadDiscordDB(channelId, guildId) {
     try {
         let array = []
 
@@ -76,8 +74,8 @@ async function LoadDiscordDB(channelId) {
         const DiscordChannels = Database.collection("discordChannels")
         const cursor = DiscordChannels.find()
 
-        if (update != 'update'){
-//          await DiscordChannels.updateOne({:`${cursor.}`}, { $set: { DiscordChannelId: `${channelId}` }})
+        if (channelId != ''){
+          await DiscordChannels.updateOne({:`${cursor.}`}, { $set: { DiscordChannelId: `${channelId}` }})
         }
 
 
@@ -93,6 +91,51 @@ async function LoadDiscordDB(channelId) {
 }
 
 
+
+
+
+async function LoadDataFromDB(DB) {
+  try {
+      
+    let array = []
+    // Connect the client to the server`
+    await MongoDb_Client.connect();
+    // Send a ping to confirm a successful connection
+    await MongoDb_Client.db("admin").command({ ping: 1 });
+    console.log("Db connected");
+
+
+    const Database = MongoDb_Client.db("saffbot");
+    const Collection = Database.collection(DB)
+      
+    if(DB == 'YoutubeApiInfo'){
+      const cursor = await Collection.findOne({ UsageCount: { $lt: 10000} });
+      array.push(cursor.YoutubeApiKey, cursor.ApiName, cursor.UsageCount)
+      return array
+    }
+
+    if (DB == 'discordChannel'){
+      const cursor = DiscordChannels.find()
+      for await (const doc of cursor) {
+        array.push(doc.DiscordChannelId,doc.guildId, doc.YoutubeId, doc.LastStream)
+      }
+    }
+
+    // Print a message if no documents were found
+
+    // Print returned documents
+    } finally {
+    // Ensures that the client will close when you finish/error
+    await MongoDb_Client.close();
+  }
+}
+
+temp.push(cursor.UsageCount)
+    temp = temp.map(Number)
+    let newUsage = temp[0]+price
+    console.log(newUsage)
+
+    await YoutubeApiInfo.updateOne({YoutubeApiKey:`${cursor.YoutubeApiKey}`}, { $set: { UsageCount: newUsage }})
 // discordapi setup
 const Discord_Client = new Client({
     intents: [
@@ -115,7 +158,8 @@ Discord_Client.on(Event.messageCreate, c => {
   if(c == '!SetAnnouncementChannel'){
     message.reply('channel saved')
     let channelId = message.channelId
-    LoadDiscordDB(channelId)
+    let guildId = message.guildId
+    LoadDiscordDB(channelId,)
   }
 })
 
@@ -135,15 +179,10 @@ const Live = async() => {
 
         console.log('youtube api Used')
 
-
-        //UpdateYoutubeApiUsage(newUsage, YoutubeApiInUse)
-
-
         // update usage count
 
         // saves the url so it doesnt multipost the same stream
         let LastStreamUrl = fs.readFileSync('../LastStreamUrl.txt', { encoding: 'utf8', flag: 'r' })
-
         if(streamurl != '' && LastStreamUrl != streamurl){
             // discord channel the announcement is send in
             const channel = Discord_Client.channels.cache.get(discordChannel[0]);
