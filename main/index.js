@@ -11,12 +11,11 @@ const fs = require('node:fs')
 const http = require('node:http')
 const { Client, GatewayIntentBits, Message, Events } = require('discord.js')
 const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
-
+const { check } = require('./timecheck.js')
 
 
 // variable init 
 const YoutubeUrlApicall = 'https://www.googleapis.com/youtube/v3'
-const TimeCheck = ['00','05','10','15','20','25','30','35','40','45','50','55']
 
 // test id UCXuqSBlHAE6Xw-yeJA0Tunw
 // saff id UC4c7omgQTXLLZWfG1glBamg
@@ -177,19 +176,16 @@ const delayExecution = (ms) => {
 }
 
 const loop = async () => {
-    await delayExecution(2000)
-    while (true) {
-        await delayExecution(1000)
-        let current_min = date.format(new Date, 'mm')
+  await delayExecution(2000)
+  while (true) {
+    await delayExecution(1000)
+    let current_mins = date.format(new Date, 'mm')
+    let response = check(current_mins)
 
-        for(let i = 0; i == TimeCheck.length; i++){
-          if(current_min == TimeCheck[i]){
-            console.log(current_min)
-          }
-        }
-
+    if (response == 1){
+        console.log('checked')
     }
+  }
 }
-
 
 loop()

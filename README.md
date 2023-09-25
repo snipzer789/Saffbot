@@ -22,7 +22,7 @@ dont
 Re-implement original bot functionality
 ```
 - Init announcement channel
-- db for server, announcement channel, youtube channel,
+- announcement channel, youtube channel,
 - features will creep 
 ```
 
