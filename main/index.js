@@ -12,6 +12,7 @@ const http = require('node:http')
 const { Client, GatewayIntentBits, Message, Events } = require('discord.js')
 const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
 const { check } = require('./timecheck.js')
+const { channel } = require('node:diagnostics_channel')
 
 
 // variable init 
@@ -61,28 +62,9 @@ async function LoadYoutubeApiDB(price) {
       await MongoDb_Client.close();
     }
 }
-async function UpdateYoutubeApiUsage(newUsage, YoutubeApiInfoold) {
+
+async function LoadDiscordDB(channelId) {
     try {
-      // Connect the client to the server
-      await MongoDb_Client.connect();
-      // Send a ping to confirm a successful connection
-      await MongoDb_Client.db("admin").command({ ping: 1 });
-      console.log("Db connected");
-
-      const Database = MongoDb_Client.db("saffbot");
-      const YoutubeApiInfo = Database.collection("YoutubeApiInfo")
-      console.log(newUsage)
-      await YoutubeApiInfo.updateOne({YoutubeApiKey:`${YoutubeApiInfoold[0]}`}, { $set: { UsageCount: `${newUsage}` }})
-
-    } finally {
-      // Ensures that the client will close when you finish/error
-      await MongoDb_Client.close();
-    }
-}
-
-async function LoadDiscordDB() {
-    try {
-        
         let array = []
 
         // Connect the client to the server
@@ -93,11 +75,12 @@ async function LoadDiscordDB() {
         const Database = MongoDb_Client.db("saffbot");
         const DiscordChannels = Database.collection("discordChannels")
         const cursor = DiscordChannels.find()
-        // Print a message if no documents were found
-        if ((await DiscordChannels.countDocuments()) === 0) {
-          console.log("No documents found!");
+
+        if (update != 'update'){
+//          await DiscordChannels.updateOne({:`${cursor.}`}, { $set: { DiscordChannelId: `${channelId}` }})
         }
-    
+
+
         // Print returned documents
         for await (const doc of cursor) {
           array.push(doc.DiscordChannelId, doc.YoutubeId, doc.LastStreamUrl)
@@ -127,6 +110,16 @@ Discord_Client.once(Events.ClientReady, c => {
     console.log(`Saffbot alive.`)
 })
 
+
+Discord_Client.on(Event.messageCreate, c => {
+  if(c == '!SetAnnouncementChannel'){
+    message.reply('channel saved')
+    let channelId = message.channelId
+    LoadDiscordDB(channelId)
+  }
+})
+
+
 // Live Checking,
 const Live = async() => {
     try {
@@ -135,7 +128,7 @@ const Live = async() => {
         // parsing youtube api keys
         const YoutubeApiInUse = await LoadYoutubeApiDB(price)
         // discord channel id parsing
-        const discordChannel = await LoadDiscordDB()
+        const discordChannel = await LoadDiscordDB('')
         // youtube api searching
         const response = await axios.get(`${YoutubeUrlApicall}/search?part=snippet&channelId=${discordChannel[1]}&channelType=any&eventType=live&order=relevance&safeSearch=safeSearchSettingUnspecified&type=video&key=${YoutubeApiInUse[0]}`)
         let streamurl = response.data.items.map((item) => item.id.videoId)
