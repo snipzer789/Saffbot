@@ -180,7 +180,14 @@ const loop = async () => {
     await delayExecution(2000)
     while (true) {
         await delayExecution(1000)
-        Live()
+        let current_min = date.format(new Date, 'mm')
+
+        for(let i = 0; i == TimeCheck.length; i++){
+          if(current_min == TimeCheck[i]){
+            console.log(current_min)
+          }
+        }
+
     }
 }
 
