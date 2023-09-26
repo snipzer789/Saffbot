@@ -91,8 +91,6 @@ async function LoadDiscordDB(channelId, guildId) {
 
 
 
-
-
 async function LoadDataFromDB(DB) {
   try {
       
