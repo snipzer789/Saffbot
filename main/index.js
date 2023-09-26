@@ -53,7 +53,6 @@ async function LoadYoutubeApiDB(price) {
       array.push(cursor.YoutubeApiKey, cursor.ApiName, cursor.UsageCount)
 
 
-
       return array
     } finally {
       // Ensures that the client will close when you finish/error
