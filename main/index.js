@@ -24,71 +24,39 @@ const MongoDb_Client = new MongoClient(uri, {
     serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true,}
 });
 
-async function LoadYoutubeApiDB(price) {
-    try {
-      
-      let array = []
-      let temp = []
-      // Connect the client to the server`
-      await MongoDb_Client.connect();
-      // Send a ping to confirm a successful connection
-      await MongoDb_Client.db("admin").command({ ping: 1 });
-      console.log("Db connected");
+//                            str int         int     str           str       str             str                 str
+async function UpdateDataToDB(DB, UsageCount, Price, YoutubeapiKey, GuildId, DiscordChannel, YoutubeChannelId, LastStreams ) {
+  try {
+    let temp = []
 
-
-      const Database = MongoDb_Client.db("saffbot");
-      const YoutubeApiInfo = Database.collection("YoutubeApiInfo")
-        
-      const cursor = await YoutubeApiInfo.findOne({ UsageCount: { $lt: 10000} });
+    // Connect the client to the server`
+    await MongoDb_Client.connect();
+    // Send a ping to confirm a successful connection
+    await MongoDb_Client.db("admin").command({ ping: 1 });
+    console.log("Db connected");
+    
+    const Database = MongoDb_Client.db("saffbot");
+    const Collection = Database.collection(DB)
       
-      temp.push(cursor.UsageCount)
+
+    if( DB == 'YoutubeApiInfo'){
+    
+      temp.push(UsageCount)
       temp = temp.map(Number)
-      let newUsage = temp[0]+price
-      console.log(newUsage)
+      let newUsage = temp[0]+Price
 
-      await YoutubeApiInfo.updateOne({YoutubeApiKey:`${cursor.YoutubeApiKey}`}, { $set: { UsageCount: newUsage }})
-      // Print a message if no documents were found
-  
-      // Print returned documents
-      array.push(cursor.YoutubeApiKey, cursor.ApiName, cursor.UsageCount)
-
-
-      return array
-    } finally {
-      // Ensures that the client will close when you finish/error
-      await MongoDb_Client.close();
+      await Collection.updateOne({YoutubeApiKey:`${YoutubeapiKey}`}, { $set: { UsageCount: newUsage }})
     }
+    if(DB == 'discordChannel'){
+      console.log('update')
+      await Collection.updateOne({upsert: true}, {guildId:''}, { $set: {DiscordGuildId:`${GuildId}`}}, { $set: {DiscordChannelId:`${DiscordChannel}`}}, {$set: {YoutubeId:`${YoutubeChannelId}`}}, {$set: {LastStream:`${LastStreams}`}})
+    }
+
+  } finally {
+    // Ensures that the client will close when you finish/error       
+    await MongoDb_Client.close();
+  }
 }
-
-async function LoadDiscordDB(channelId, guildId) {
-    try {
-        let array = []
-
-        // Connect the client to the server
-        await MongoDb_Client.connect();
-        // Send a ping to confirm a successful connection
-        await MongoDb_Client.db("admin").command({ ping: 1 });
-        console.log("Db connected");
-        const Database = MongoDb_Client.db("saffbot");
-        const DiscordChannels = Database.collection("discordChannels")
-        const cursor = DiscordChannels.find()
-
-        if (channelId != ''){
-          await DiscordChannels.updateOne({:`${cursor.}`}, { $set: { DiscordChannelId: `${channelId}` }})
-        }
-
-
-        // Print returned documents
-        for await (const doc of cursor) {
-          array.push(doc.DiscordChannelId, doc.YoutubeId, doc.LastStreamUrl)
-      }
-        return array
-      } finally {
-        // Ensures that the client will close when you finish/error
-        await MongoDb_Client.close();
-      }
-}
-
 
 
 async function LoadDataFromDB(DB) {
@@ -116,23 +84,17 @@ async function LoadDataFromDB(DB) {
       for await (const doc of cursor) {
         array.push(doc.DiscordChannelId,doc.guildId, doc.YoutubeId, doc.LastStream)
       }
+      return array
     }
 
-    // Print a message if no documents were found
-
-    // Print returned documents
-    } finally {
+  } finally {
     // Ensures that the client will close when you finish/error
     await MongoDb_Client.close();
   }
 }
 
-temp.push(cursor.UsageCount)
-    temp = temp.map(Number)
-    let newUsage = temp[0]+price
-    console.log(newUsage)
 
-    await YoutubeApiInfo.updateOne({YoutubeApiKey:`${cursor.YoutubeApiKey}`}, { $set: { UsageCount: newUsage }})
+
 // discordapi setup
 const Discord_Client = new Client({
     intents: [
@@ -144,21 +106,34 @@ const Discord_Client = new Client({
         GatewayIntentBits.DirectMessages]
 });
 
-Discord_Client.login("MTE0ODk4NzY2Nzk4ODYyNzQ5Ng.GVj3f7.9NkeajWUoVlvTd7jP9gECjplMhR1tCvyTOjOvQ")
+Discord_Client.login(DiscordKey)
 
 Discord_Client.once(Events.ClientReady, c => {
     console.log(`Saffbot alive.`)
 })
 
 
-Discord_Client.on(Event.messageCreate, c => {
-  if(c == '!SetAnnouncementChannel'){
+Discord_Client.on(Event.messageCreate, message => {
+  message = message.split(' ')
+  if(message[0] == '!SetAnnouncementChannel'){
     message.reply('channel saved')
+
     let channelId = message.channelId
     let guildId = message.guildId
-    LoadDiscordDB(channelId,)
+
+    //find youtube channel id
+    let YoutubeChannelId
+
+    UpdateDataToDB('discordChannel', 0, 0, '', guildId, channelId, YoutubeChannelId, '')
   }
 })
+
+Discord_Client.on("guildCreate", message => {
+  console.log('DiscordServer Joined')
+  let guildId = message.guildId
+  //                str           int int str             str str str
+  UpdateDataToDB('discordChannel', 0, 0, '', guildId, '','','')
+} )
 
 
 // Live Checking,
@@ -167,9 +142,9 @@ const Live = async() => {
 
         let price = 100
         // parsing youtube api keys
-        const YoutubeApiInUse = await LoadYoutubeApiDB(price)
+        const YoutubeApiInUse = await LoadDataFromDB('')
         // discord channel id parsing
-        const discordChannel = await LoadDiscordDB('')
+        const discordChannel = await LoadDataFromDB('')
         // youtube api searching
         const response = await axios.get(`${YoutubeUrlApicall}/search?part=snippet&channelId=${discordChannel[1]}&channelType=any&eventType=live&order=relevance&safeSearch=safeSearchSettingUnspecified&type=video&key=${YoutubeApiInUse[0]}`)
         let streamurl = response.data.items.map((item) => item.id.videoId)

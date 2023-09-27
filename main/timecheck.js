@@ -20,7 +20,6 @@ const check = (current_min) => {
   if(current_min == TimeCheck[1] && count1 != 1){
     count1++
     return count1
-
   }
   if(current_min == TimeCheck[2] && count2 != 1){
     count2++
