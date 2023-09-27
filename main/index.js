@@ -9,7 +9,7 @@ const axios = require('axios')
 const date = require('date-and-time')
 const fs = require('node:fs')
 const http = require('node:http')
-const { Client, GatewayIntentBits, Message, Events } = require('discord.js')
+const { Client, GatewayIntentBits, Message, Events, Guild } = require('discord.js')
 const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
 const { check } = require('./timecheck.js')
 
@@ -24,8 +24,8 @@ const MongoDb_Client = new MongoClient(uri, {
     serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true,}
 });
 
-//                            str int         int     str           str       str             str                 str
-async function UpdateDataToDB(DB, UsageCount, Price, YoutubeapiKey, GuildId, DiscordChannel, YoutubeChannelId, LastStreams ) {
+//                            str int         int     str           str       str             str                 str           str
+async function UpdateDataToDB(DB, UsageCount, Price, YoutubeapiKey, GuildId, DiscordChannel, YoutubeChannelId, LastStreams , DiscordUpdateType) {
   try {
     let temp = []
 
@@ -47,9 +47,13 @@ async function UpdateDataToDB(DB, UsageCount, Price, YoutubeapiKey, GuildId, Dis
 
       await Collection.updateOne({YoutubeApiKey:`${YoutubeapiKey}`}, { $set: { UsageCount: newUsage }})
     }
-    if(DB == 'discordChannel'){
-      console.log('update')
-      await Collection.updateOne({upsert: true}, {guildId:''}, { $set: {DiscordGuildId:`${GuildId}`}}, { $set: {DiscordChannelId:`${DiscordChannel}`}}, {$set: {YoutubeId:`${YoutubeChannelId}`}}, {$set: {LastStream:`${LastStreams}`}})
+    if(DB == 'discordChannels' && DiscordUpdateType == 'Guild id'){
+      console.log('Insert guild')
+      await Collection.insertOne({DiscordChannelId:'', YoutubeId:'', LastStream:'', DiscordGuildId:`${GuildId}`})
+    }
+    if(DB == 'discordChannels' && DiscordUpdateType == 'Channel id'){
+      console.log('updateChannel')
+      await Collection.updateOne({DiscordGuildId:`${GuildId}`}, {$set:  {DiscordChannelId:`${DiscordChannel}`}})
     }
 
   } finally {
@@ -113,26 +117,27 @@ Discord_Client.once(Events.ClientReady, c => {
 })
 
 
-Discord_Client.on(Event.messageCreate, message => {
-  message = message.split(' ')
-  if(message[0] == '!SetAnnouncementChannel'){
+Discord_Client.on('messageCreate', message => {
+  if(message.content == '!setchannel'){
     message.reply('channel saved')
-
+    let tempMessage = (message.content).split(' ')
+    console.log(tempmessage)
     let channelId = message.channelId
     let guildId = message.guildId
-
+    console.log(channelId)
+    console.log(guildId)
     //find youtube channel id
-    let YoutubeChannelId
+    let YoutubeChannelId = ''
 
-    UpdateDataToDB('discordChannel', 0, 0, '', guildId, channelId, YoutubeChannelId, '')
+    UpdateDataToDB('discordChannels', 0, 0, '', guildId, channelId, YoutubeChannelId, '', 'Channel id')
   }
 })
 
 Discord_Client.on("guildCreate", message => {
-  console.log('DiscordServer Joined')
+  console.log('Discord Server Joined')
   let guildId = message.guildId
   //                str           int int str             str str str
-  UpdateDataToDB('discordChannel', 0, 0, '', guildId, '','','')
+  UpdateDataToDB('discordChannels', 0, 0, '', guildId, '','','', 'Guild id')
 } )
 
 
