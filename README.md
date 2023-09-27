@@ -3,11 +3,10 @@
 ## Youtube announcement discord bot.
 
 ## Description
-Originally created for v-tuber LadySaffron, written in js
+its a bot that posts youtube live streams in a discord channel...... what do you want it does nothing else......... stop reading.............
 
 
 ## Installation
-
 
 ## Usage
 to set the location of the announcements run:
@@ -27,12 +26,9 @@ Re-implement original bot functionality
 ```
 
 ## Contributing
-If you wish to contribute, dont. this is mainly a project for me to learn just
+If you wish to contribute dont.
 
 ## Authors and acknowledgment
 me(snipzer)
 
 ## License
-
-## Project status
-currently worked on
