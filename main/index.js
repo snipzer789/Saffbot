@@ -10,7 +10,7 @@ const date = require('date-and-time')
 const fs = require('node:fs')
 const http = require('node:http')
 const { Client, GatewayIntentBits, Message, Events, Guild } = require('discord.js')
-const { MongoClient, ServerApiVersion, Collection } = require('mongodb');
+const { MongoClient, ServerApiVersion, Collection, StreamDescription } = require('mongodb');
 const { check } = require('./timecheck.js')
 
 // variable init 
@@ -144,14 +144,18 @@ const Live = async() => {
       // update usage count
       await UpdateDataToDB('YoutubeApiInfo', UsageCount, 100, YoutubeApiInUse[0], '', '', '', '', '', '')
       console.log('youtube api Used')
-
+      console.log(streamurl.join(''))
+      streamurl = streamurl.join('')
+      if(streamurl == ''){
+        console.log('No stream')
+      }
 
       // saves the url so it doesnt multipost the same stream
       let LastStreamUrl = fs.readFileSync('../LastStreamUrl.txt', { encoding: 'utf8', flag: 'r' })
       if(streamurl != '' && LastStreamUrl != streamurl){
           // discord channel the announcement is send in
-          const channel = Discord_Client.channels.cache.get("1080156472488497253");
-          channel.send(`<@&1093184251979112539> Saff is now live: https://www.youtube.com/watch?v=${streamurl[0]}`);
+          const channel = Discord_Client.channels.cache.get("1146490102424555552");
+          channel.send(`<@&1093184251979112539> Saff is now live: https://www.youtube.com/watch?v=${streamurl}`);
 
           console.log('Live status posted')
           fs.writeFileSync('../LastStreamUrl.txt', `${streamurl}`)
@@ -221,7 +225,7 @@ const loop = async () => {
         console.log('checked')
         Live()
     }
-    if (current_Hour == '08' & count>3){
+    if (current_Hour == '09' & count>3){
       await UpdateDataToDB('', 0, -100, '', '', '', '', '', '')
       console.log('reset usagecount')
       count++
