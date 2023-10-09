@@ -154,7 +154,7 @@ const Live = async() => {
       let LastStreamUrl = fs.readFileSync('../LastStreamUrl.txt', { encoding: 'utf8', flag: 'r' })
       if(streamurl != '' && LastStreamUrl != streamurl){
           // discord channel the announcement is send in
-          const channel = Discord_Client.channels.cache.get("1146490102424555552");
+          const channel = Discord_Client.channels.cache.get("1080156472488497253");
           channel.send(`<@&1093184251979112539> Saff is now live: https://www.youtube.com/watch?v=${streamurl}`);
 
           console.log('Live status posted')
