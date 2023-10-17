@@ -130,38 +130,40 @@ const YoutubeChannelIds = async(YoutubeChannelUrl) => {
 // Live Checking,
 const Live = async() => {
   try {
-
+    console.log('------------------------------------------------------------------------------------------')
     // parsing youtube api keys
       const YoutubeApiInUse = await LoadDataFromDB('YoutubeApiInfo')
       // discord channel id parsing
       //const discordChannel = await LoadDataFromDB('discordChannels')
       //console.log(discordChannel)
-
       // youtube api searching
       const response = await axios.get(`${YoutubeUrlApicall}/search?part=snippet&channelId=UC4c7omgQTXLLZWfG1glBamg&channelType=any&eventType=live&order=relevance&safeSearch=safeSearchSettingUnspecified&type=video&key=${YoutubeApiInUse[0]}`)
       let streamurl = response.data.items.map((item) => item.id.videoId)
       let UsageCount = YoutubeApiInUse[2]
       // update usage count
       await UpdateDataToDB('YoutubeApiInfo', UsageCount, 100, YoutubeApiInUse[0], '', '', '', '', '', '')
+      console.log('------------------------------------------------------------------------------------------')
+
       console.log('youtube api Used')
       console.log(streamurl.join(''))
       streamurl = streamurl.join('')
+      console.log('------------------------------------------------------------------------------------------')
       if(streamurl == ''){
         console.log('No stream')
       }
 
       // saves the url so it doesnt multipost the same stream
-      let LastStreamUrl = fs.readFileSync('../LastStreamUrl.txt', { encoding: 'utf8', flag: 'r' })
+      let LastStreamUrl = fs.readFileSync('./LastStreamUrl.txt', { encoding: 'utf8', flag: 'r' })
       if(streamurl != '' && LastStreamUrl != streamurl){
           // discord channel the announcement is send in
           const channel = Discord_Client.channels.cache.get("1080156472488497253");
           channel.send(`<@&1093184251979112539> Saff is now live: https://www.youtube.com/watch?v=${streamurl}`);
 
           console.log('Live status posted')
-          fs.writeFileSync('../LastStreamUrl.txt', `${streamurl}`)
+          fs.writeFileSync('./LastStreamUrl.txt', `${streamurl}`)
       }
 
-
+      console.log('------------------------------------------------------------------------------------------')
   } catch (err) {
       console.log(err)
   }
@@ -220,12 +222,12 @@ const loop = async () => {
     let current_mins = date.format(new Date, 'mm')
     let current_Hour = date.format(new Date, 'hh')
     let response = check(current_mins)
-
     if (response == 1){
         console.log('checked')
-        Live()
+        await Live()
     }
-    if (current_Hour == '09' & count>3){
+    console.log(date.format(new Date, 'ddd, MMM DD YYYY hh:mm A [GMT]Z'))
+    if (current_Hour == '09' && count>3){
       await UpdateDataToDB('', 0, -100, '', '', '', '', '', '')
       console.log('reset usagecount')
       count++
