@@ -7,7 +7,7 @@ let uri = process.env.uri;
 const axios = require("axios");
 const date = require("date-and-time");
 const fs = require("node:fs");
-const http = require("node:http");
+require('http').createServer((req, res) => res.end('Bot is alive!')).listen(3000);
 const {
   Client,
   GatewayIntentBits,
@@ -278,24 +278,27 @@ const loop = async () => {
     let current_mins = date.format(new Date(), "mm");
     let current_Hour = date.format(new Date(), "hh");
     let current_Time = date.format(new Date(), "A");
+
+    if (current_Time == "AM") {
+      if (current_Hour == "08" && count != 1) {
+        await UpdateDataToDB("YoutubeApiInfo", 0, -100, "", "", "", "", "", "");
+        console.log("reset usagecount");
+        count++;
+      }
+    }
+    if ((current_Hour != "08") && (count == 1)) {
+      count = 0;
+    }
+
     let response = check(current_mins);
     if (response == 1) {
       console.log("checked");
       await Live();
     }
     console.log(date.format(new Date(), "ddd, MMM DD YYYY hh:mm A [GMT]Z"));
-
-    if (current_Time == "AM") {
-      if (current_Hour == "08" && count < 10) {
-        await UpdateDataToDB("YoutubeApiInfo", 0, -100, "", "", "", "", "", "");
-        console.log("reset usagecount");
-        count++;
-      }
-    }
-    if ((current_Hour == "08") & (count == 10)) {
-      count = 0;
-    }
   }
 };
 
 loop();
+
+
