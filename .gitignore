@@ -1,4 +1,5 @@
 /node_modules
-/main/.env
-things.txt
+.env
 .gitignore
+discordMessage.txt
+/Messages_logger
