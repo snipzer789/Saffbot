@@ -1,0 +1,14 @@
+{
+  "name": "saffbot-v4",
+  "version": "4.0.0",
+  "description": "its a bot that posts youtube live streams in a discord channel...... what do you want it does nothing else......... stop reading.............",
+  "main": "server.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
