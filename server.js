@@ -3,8 +3,7 @@ const DATE = require('date-and-time')
 const fs = require('node:fs');
 const csv = require('csv-parser')
 require("dotenv").config();
-// MTE0ODk4NzY2Nzk4ODYyNzQ5Ng.GArg_b.aASrSlY349sTAfVF-n2LattguQPym-tPLloyPA
-// MTEzNjgwOTAwODQ0ODE2Mzk1Mg.G5pdmA.fHWDcVp-jOpwA0N0_RA_f_Oh8hvsT1wmBVn__I
+
 let DiscordKey = process.env.DiscordTolken;
 
 const Discord_Client = new Client({
