@@ -3,7 +3,6 @@ const fs = require('node:fs');
 const csv = require('csv-parser');
 require("dotenv").config();
 
-// need to keep those api keys secret you know
 let DiscordKey = process.env.DiscordTolken;
 
 // discord setup bullshit
