@@ -3,3 +3,5 @@
 .gitignore
 discordMessage.txt
 /Messages_logger
+/Messages_logger_old
+complaints_logger
