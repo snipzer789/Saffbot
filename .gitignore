@@ -3,4 +3,9 @@
 .gitignore
 discordMessage.txt
 /Messages_logger
+<<<<<<< HEAD
 /complaints_logger
+=======
+/Messages_logger_old
+/Complaints_logger
+>>>>>>> 391685e1de52cf181080244053fe96d940cd4370
