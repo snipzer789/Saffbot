@@ -1,4 +1,8 @@
-/node_modules
-/main/.env
-things.txt
 .gitignore
+.env
+/node_modules
+/Messages_logger
+/Complaints_logger
+discordmessage.txt
+LastStreamUrl.txt
+shill_message.txt
