@@ -1,11 +1,12 @@
-const { Client, GatewayIntentBits, Events, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Events, Partials, Collection } = require('discord.js');
 const fs = require('node:fs');
-const csv = require('csv-parser');
+const path = require('node:path');
 require('dotenv').config();
 
 //	variables
 const message_Logger_id = '1186681602361798767';
 const stream_announcement_id = '1080156472488497253';
+const complaints_channel = '1252340611332313108'
 
 // need to keep those api keys secret you know
 let DiscordKey = process.env.DiscordTolken;
@@ -28,11 +29,56 @@ const Discord_Client = new Client({
 	],
 });
 
+Discord_Client.commands = new Collection();
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
+
+for (const folder of commandFolders) {
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		if ('data' in command && 'execute' in command) {
+			Discord_Client.commands.set(command.data.name, command);
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+Discord_Client.once(Events.ClientReady, (readyClient) => {
+	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+});
+
+Discord_Client.cooldowns = new Collection();
+Discord_Client.COOLDOWN_SECONDS = 180; // replace with desired cooldown time in seconds
+
+Discord_Client.on(Events.InteractionCreate, async (interaction) => {
+
+	if (!interaction.isChatInputCommand()) return;
+	const command = interaction.client.commands.get(interaction.commandName);
+	
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		channels = Discord_Client.channels.cache.get(complaints_channel);
+		await command.execute(Discord_Client, interaction, channels);
+	} catch (error) {
+		console.log(error)
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
+});
+
 // just logs in to saffbot
 Discord_Client.login(DiscordKey);
-Discord_Client.once(Events.ClientReady, (c) => {
-	console.log(`Saffbot alive.`);
-});
 
 const remove_linebreaks = (str) => {
 	let newstr = '';
@@ -197,18 +243,17 @@ const PostMessage_guild = (message) => {
 ReadMessageloggerDir();
 
 Discord_Client.on(Events.MessageCreate, async (message) => {
-	
-	if (message.guildId == null && message.author.bot == false && message.type != 18) {
-		console.log('dm');
+	if (message.guildId == 1080156043188899900) {
+		if (message.guildId == null && message.author.bot == false && message.type != 18) {
+			console.log('dm');
+		}
 
+		if (message.guildId != null && message.author.bot == false && message.type != 18) {
+		//	CreateChannelcsv(message.channelId);
+		//	SaveMessageTocsv(message);
+		//	PostMessage_guild(message);
+		}
 	}
-
-	if (message.guildId != null && message.author.bot == false && message.type != 18) {
-		CreateChannelcsv(message.channelId);
-		SaveMessageTocsv(message);
-		PostMessage_guild(message);
-	}
-
 });
 
 const saffId = '1054580330629189733';
@@ -261,3 +306,5 @@ Discord_Client.on(Events.MessageCreate, (message) => {
 		}
 	}
 });
+
+
