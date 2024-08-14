@@ -2,7 +2,6 @@
 .gitignore
 .env
 /node_modules
-/Messages_logger
 /Complaints_logger
 discordmessage.txt
 LastStreamUrl.txt
