@@ -4,9 +4,9 @@ const path = require('node:path');
 require('dotenv').config();
 
 //	variables
-const message_Logger_id = '1049454107569705021';
+const message_Logger_id = '1186681602361798767';
 const stream_announcement_id = '1080156472488497253';
-const complaints_channel = '1252340611332313108'
+const complaints_channel = '1252317741403209870'
 
 // need to keep those api keys secret you know
 let DiscordKey = process.env.DiscordTolken;
