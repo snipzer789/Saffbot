@@ -4,7 +4,7 @@ const path = require('node:path');
 require('dotenv').config();
 
 //	variables
-const message_Logger_id = '1186681602361798767';
+const message_Logger_id = '1049454107569705021';
 const stream_announcement_id = '1080156472488497253';
 const complaints_channel = '1252340611332313108'
 
@@ -232,10 +232,17 @@ const PostMessage_guild = (message) => {
 	if (outgoing_log != '') {
 		const Logs_channel = Discord_Client.channels.cache.get(message_Logger_id);
 		console.log(outgoing_log);
-		Logs_channel.send({
-			content: outgoing_log,
-			flags: [4096],
-		});
+		if(outgoing_log.includes("SPOILER")){
+			Logs_channel.send({
+				content: outgoing_log,
+				flags: [4096, 4],
+			});
+		} else {
+			Logs_channel.send({
+				content: outgoing_log,
+				flags: [4096],
+			});
+		}
 		return;
 	}
 };
@@ -249,9 +256,9 @@ Discord_Client.on(Events.MessageCreate, async (message) => {
 		}
 
 		if (message.guildId != null && message.author.bot == false && message.type != 18) {
-		//	CreateChannelcsv(message.channelId);
-		//	SaveMessageTocsv(message);
-		//	PostMessage_guild(message);
+			CreateChannelcsv(message.channelId);
+			SaveMessageTocsv(message);
+			PostMessage_guild(message);
 		}
 	}
 });

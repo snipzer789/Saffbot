@@ -11,13 +11,11 @@ module.exports = {
 
 	async execute(client, interaction, channel) {
         let user_id = await interaction.user.id
-        console.log(user_id)
 		if (client.cooldowns.has(interaction.user.id)) {
 			// cooldown not ended
 			interaction.reply({ content: 'Please wait for cooldown to end (3 minutes after the first complaint)', ephemeral: true });
 		} else {
 			// no cooldown 
-			console.log(interaction);
 			let count = fs.readFileSync('./count', {
 				encoding: 'utf8',
 				flag: 'r',
@@ -28,8 +26,13 @@ module.exports = {
 				name: reason + ' : ' + count,
 				type: ChannelType.PrivateThread,
 				reason: 'complaint',
+				invitable: false,
 			});
 			await thread.members.add(interaction.user.id);
+			await thread.send({
+				content: "<@&1080158505325051925>",
+				flags: [ 4096 ]
+			});
 			console.log(`Created thread: ${thread.name}`);
 			await interaction.reply({ content: 'Creating a complaint thread for ' + reason, ephemeral: true });
 			// console.log(interaction)
