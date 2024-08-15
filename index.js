@@ -53,7 +53,7 @@ Discord_Client.once(Events.ClientReady, (readyClient) => {
 });
 
 Discord_Client.cooldowns = new Collection();
-Discord_Client.COOLDOWN_SECONDS = 180; // replace with desired cooldown time in seconds
+Discord_Client.COOLDOWN_SECONDS = 600; // replace with desired cooldown time in seconds
 
 Discord_Client.on(Events.InteractionCreate, async (interaction) => {
 
