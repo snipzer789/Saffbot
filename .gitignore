@@ -1,8 +1,7 @@
-
 .gitignore
 .env
 /node_modules
-/Complaints_logger
 discordmessage.txt
 LastStreamUrl.txt
 shill_message.txt
+count.txt
