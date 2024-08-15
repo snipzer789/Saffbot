@@ -7,6 +7,7 @@ require('dotenv').config();
 const message_Logger_id = '1186681602361798767';
 const stream_announcement_id = '1080156472488497253';
 const complaints_channel = '1252317741403209870'
+const saffId = '1054580330629189733';
 
 // need to keep those api keys secret you know
 let DiscordKey = process.env.DiscordTolken;
@@ -256,14 +257,13 @@ Discord_Client.on(Events.MessageCreate, async (message) => {
 		}
 
 		if (message.guildId != null && message.author.bot == false && message.type != 18) {
-			CreateChannelcsv(message.channelId);
-			SaveMessageTocsv(message);
-			PostMessage_guild(message);
+			//CreateChannelcsv(message.channelId);
+			//SaveMessageTocsv(message);
+			//PostMessage_guild(message);
 		}
 	}
 });
 
-const saffId = '1054580330629189733';
 Discord_Client.on(Events.PresenceUpdate, (oldPresence, newPresence) => {
 	if (newPresence.userId == saffId) {
 		if (newPresence.activities[0] != null) {

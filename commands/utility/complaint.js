@@ -3,19 +3,19 @@ const fs = require('node:fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('complaint')
-		.setDescription('Starts a complaint, (3 min cooldown)')
-		.addStringOption((option) => option.setName('reason').setDescription('Tldr reason for the complaint').setMaxLength(100).setRequired(true))
+		.setName('support')
+		.setDescription('Starts a support ticket, (3 min cooldown), (only you can see the command used)')
+		.addStringOption((option) => option.setName('reason').setDescription('Tldr reason for the ticket').setMaxLength(100).setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
 		.setDMPermission(false),
 
 	async execute(client, interaction, channel) {
-        let user_id = await interaction.user.id
+		let user_id = await interaction.user.id;
 		if (client.cooldowns.has(interaction.user.id)) {
 			// cooldown not ended
-			interaction.reply({ content: 'Please wait for cooldown to end (3 minutes after the first complaint)', ephemeral: true });
+			interaction.reply({ content: 'Please wait for cooldown to end (3 minutes after the first ticket)', ephemeral: true });
 		} else {
-			// no cooldown 
+			// no cooldown
 			let count = fs.readFileSync('./count', {
 				encoding: 'utf8',
 				flag: 'r',
@@ -30,11 +30,11 @@ module.exports = {
 			});
 			await thread.members.add(interaction.user.id);
 			await thread.send({
-				content: "<@&1080158505325051925>",
-				flags: [ 4096 ]
+				content: '<@&1080158505325051925>',
+				flags: [4096],
 			});
 			console.log(`Created thread: ${thread.name}`);
-			await interaction.reply({ content: 'Creating a complaint thread for ' + reason, ephemeral: true });
+			await interaction.reply({ content: 'Creating a support thread for ' + reason, ephemeral: true });
 			// console.log(interaction)
 			count = count + 1;
 			fs.writeFileSync('./count', `${count}`);
